@@ -1,0 +1,880 @@
+version: '3.2'
+
+services:
+  es01:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es01.mytest.ir
+    environment:
+      - TZ=Asia/Tehran
+      - node.name=es01.mytest.ir
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.seed_hosts=es02.mytest.ir,es03.mytest.ir,es04.mytest.ir,es05.mytest.ir,es06.mytest.ir,es07.mytest.ir,es08.mytest.ir,es09.mytest.ir,es10.mytest.ir,es11.mytest.ir
+      - cluster.initial_master_nodes=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir
+      - node.master=true
+      - node.data=false
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - path.repo=/usr/share/elasticsearch/backup
+      - xpack.monitoring.collection.enabled=true
+      - xpack.http.ssl.verification_mode=none
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.client_authentication=optional
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/esdata/master/esdata1:/usr/share/elasticsearch/data
+      - /mount/esdata:/usr/share/elasticsearch/backup
+      - ./config/ssl/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
+    ports:
+     - "9201:9200"
+     - "9301:9300"
+    networks:
+      elk:
+        ipv4_address: 192.168.0.101
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-k","--cacert", "/usr/share/elasticsearch/config/ca.crt", "-s" ,"-f", "-u", "${ELASTIC_USER}:${ELASTIC_PASSWORD}", "https://localhost:9200/_cat/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+
+  es02:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es02.mytest.ir
+    environment:
+      - TZ=Asia/Tehran
+      - node.name=es02.mytest.ir
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.seed_hosts=es01.mytest.ir,es03.mytest.ir,es04.mytest.ir,es05.mytest.ir,es06.mytest.ir,es07.mytest.ir,es08.mytest.ir,es09.mytest.ir,es10.mytest.ir,es11.mytest.ir
+      - cluster.initial_master_nodes=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir
+      - node.master=true
+      - node.data=false
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - path.repo=/usr/share/elasticsearch/backup
+      - xpack.monitoring.collection.enabled=true
+      - xpack.http.ssl.verification_mode=none
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.client_authentication=optional
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/esdata/master/esdata2:/usr/share/elasticsearch/data
+      - /mount/esdata:/usr/share/elasticsearch/backup
+      - ./config/ssl/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
+    ports:
+      - "9202:9200"
+      - "9302:9300"
+    networks:
+      elk:
+        ipv4_address: 192.168.0.102
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-k","--cacert", "/usr/share/elasticsearch/config/ca.crt", "-s" ,"-f", "-u", "${ELASTIC_USER}:${ELASTIC_PASSWORD}", "https://localhost:9200/_cat/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+
+        
+  es03:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es03.mytest.ir
+    environment:
+      - TZ=Asia/Tehran
+      - node.name=es03.mytest.ir
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.seed_hosts=es01.mytest.ir,es02.mytest.ir,es04.mytest.ir,es05.mytest.ir,es06.mytest.ir,es07.mytest.ir,es08.mytest.ir,es09.mytest.ir,es10.mytest.ir,es11.mytest.ir
+      - cluster.initial_master_nodes=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir
+      - node.master=true
+      - node.data=false
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - path.repo=/usr/share/elasticsearch/backup
+      - xpack.monitoring.collection.enabled=true
+      - xpack.http.ssl.verification_mode=none
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.client_authentication=optional
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/esdata/master/esdata3:/usr/share/elasticsearch/data
+      - /mount/esdata:/usr/share/elasticsearch/backup
+      - ./config/ssl/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
+    ports:
+      - "9203:9200"
+      - "9303:9300"
+    networks:
+      elk:
+        ipv4_address: 192.168.0.103
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-k","--cacert", "/usr/share/elasticsearch/config/ca.crt", "-s" ,"-f", "-u", "${ELASTIC_USER}:${ELASTIC_PASSWORD}", "https://localhost:9200/_cat/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+
+  es04:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es04.mytest.ir
+    environment:
+      - TZ=Asia/Tehran
+      - node.name=es04.mytest.ir
+      - node.attr.box_type=hot
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.seed_hosts=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir,es05.mytest.ir,es06.mytest.ir,es07.mytest.ir,es08.mytest.ir,es09.mytest.ir,es10.mytest.ir,es11.mytest.ir
+      - cluster.initial_master_nodes=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir
+      - node.master=false
+      - node.data=true
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - path.repo=/usr/share/elasticsearch/backup
+      - xpack.monitoring.collection.enabled=true
+      - xpack.http.ssl.verification_mode=none
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.client_authentication=optional
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/esdata/hot/esdata4:/usr/share/elasticsearch/data
+      - /mount/esdata:/usr/share/elasticsearch/backup
+      - ./config/ssl/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
+    networks:
+      elk:
+        ipv4_address: 192.168.0.104
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-k","--cacert", "/usr/share/elasticsearch/config/ca.crt", "-s" ,"-f", "-u", "${ELASTIC_USER}:${ELASTIC_PASSWORD}", "https://localhost:9200/_cat/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+
+  es05:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es05.mytest.ir
+    environment:
+      - TZ=Asia/Tehran
+      - node.name=es05.mytest.ir
+      - node.attr.box_type=hot
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.seed_hosts=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir,es04.mytest.ir,es06.mytest.ir,es07.mytest.ir,es08.mytest.ir,es09.mytest.ir,es10.mytest.ir,es11.mytest.ir
+      - cluster.initial_master_nodes=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir
+      - node.master=false
+      - node.data=true
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - path.repo=/usr/share/elasticsearch/backup
+      - xpack.monitoring.collection.enabled=true
+      - xpack.http.ssl.verification_mode=none
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.client_authentication=optional
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/esdata/hot/esdata5:/usr/share/elasticsearch/data
+      - /mount/esdata:/usr/share/elasticsearch/backup
+      - ./config/ssl/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
+    networks:
+      elk:
+        ipv4_address: 192.168.0.105
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-k","--cacert", "/usr/share/elasticsearch/config/ca.crt", "-s" ,"-f", "-u", "${ELASTIC_USER}:${ELASTIC_PASSWORD}", "https://localhost:9200/_cat/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+
+
+  es06:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es06.mytest.ir
+    environment:
+      - TZ=Asia/Tehran
+      - node.name=es06.mytest.ir
+      - node.attr.box_type=hot
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.seed_hosts=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir,es04.mytest.ir,es05.mytest.ir,es07.mytest.ir,es08.mytest.ir,es09.mytest.ir,es10.mytest.ir,es11.mytest.ir
+      - cluster.initial_master_nodes=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir
+      - node.master=false
+      - node.data=true
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - path.repo=/usr/share/elasticsearch/backup
+      - xpack.monitoring.collection.enabled=true
+      - xpack.http.ssl.verification_mode=none
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.client_authentication=optional
+    networks:
+      elk:
+        ipv4_address: 192.168.0.106
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/esdata/hot/esdata6:/usr/share/elasticsearch/data
+      - /mount/esdata:/usr/share/elasticsearch/backup
+      - ./config/ssl/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-k","--cacert", "/usr/share/elasticsearch/config/ca.crt", "-s" ,"-f", "-u", "${ELASTIC_USER}:${ELASTIC_PASSWORD}", "https://localhost:9200/_cat/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+       
+
+  es07:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es07.mytest.ir
+    environment:
+      - TZ=Asia/Tehran
+      - node.name=es07.mytest.ir
+      - node.attr.box_type=warm
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.seed_hosts=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir,es04.mytest.ir,es05.mytest.ir,es06.mytest.ir,es08.mytest.ir,es09.mytest.ir,es10.mytest.ir,es11.mytest.ir
+      - cluster.initial_master_nodes=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir
+      - node.master=false
+      - node.data=true
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - path.repo=/usr/share/elasticsearch/backup
+      - xpack.monitoring.collection.enabled=true
+      - xpack.http.ssl.verification_mode=none
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.client_authentication=optional
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/esdata/warm/esdata7:/usr/share/elasticsearch/data
+      - /mount/esdata:/usr/share/elasticsearch/backup
+      - ./config/ssl/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
+    networks:
+      elk:
+        ipv4_address: 192.168.0.107
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-k","--cacert", "/usr/share/elasticsearch/config/ca.crt", "-s" ,"-f", "-u", "${ELASTIC_USER}:${ELASTIC_PASSWORD}", "https://localhost:9200/_cat/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+
+
+  es08:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es08.mytest.ir
+    environment:
+      - TZ=Asia/Tehran
+      - node.name=es08.mytest.ir
+      - node.attr.box_type=warm
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.seed_hosts=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir,es04.mytest.ir,es05.mytest.ir,es06.mytest.ir,es07.mytest.ir,es09.mytest.ir,es10.mytest.ir,es11.mytest.ir
+      - cluster.initial_master_nodes=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir
+      - node.master=false
+      - node.data=true
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - path.repo=/usr/share/elasticsearch/backup
+      - xpack.monitoring.collection.enabled=true
+      - xpack.http.ssl.verification_mode=none
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.client_authentication=optional
+    networks:
+      elk:
+        ipv4_address: 192.168.0.108
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/esdata/warm/esdata8:/usr/share/elasticsearch/data
+      - /mount/esdata:/usr/share/elasticsearch/backup
+      - ./config/ssl/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-k","--cacert", "/usr/share/elasticsearch/config/ca.crt", "-s" ,"-f", "-u", "${ELASTIC_USER}:${ELASTIC_PASSWORD}", "https://localhost:9200/_cat/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+
+  es09:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es09.mytest.ir
+    environment:
+      - TZ=Asia/Tehran
+      - node.name=es09.mytest.ir
+      - node.attr.box_type=warm
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.seed_hosts=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir,es04.mytest.ir,es05.mytest.ir,es06.mytest.ir,es07.mytest.ir,es08.mytest.ir,es10.mytest.ir,es11.mytest.ir
+      - cluster.initial_master_nodes=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir
+      - node.master=false
+      - node.data=true
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - path.repo=/usr/share/elasticsearch/backup
+      - xpack.monitoring.collection.enabled=true
+      - xpack.http.ssl.verification_mode=none
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.client_authentication=optional
+    networks:
+      elk:
+        ipv4_address: 192.168.0.109
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/esdata/warm/esdata9:/usr/share/elasticsearch/data
+      - /mount/esdata:/usr/share/elasticsearch/backup
+      - ./config/ssl/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-k","--cacert", "/usr/share/elasticsearch/config/ca.crt", "-s" ,"-f", "-u", "${ELASTIC_USER}:${ELASTIC_PASSWORD}", "https://localhost:9200/_cat/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+
+  es10:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es10.mytest.ir
+    environment:
+      - TZ=Asia/Tehran
+      - node.name=es10.mytest.ir
+      - node.attr.box_type=cold
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.seed_hosts=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir,es04.mytest.ir,es05.mytest.ir,es06.mytest.ir,es07.mytest.ir,es08.mytest.ir,es09.mytest.ir,es11.mytest.ir
+      - cluster.initial_master_nodes=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir
+      - node.master=false
+      - node.data=true
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - path.repo=/usr/share/elasticsearch/backup
+      - xpack.monitoring.collection.enabled=true
+      - xpack.http.ssl.verification_mode=none
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.client_authentication=optional
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/esdata/cold/esdata10:/usr/share/elasticsearch/data
+      - /mount/esdata:/usr/share/elasticsearch/backup
+      - ./config/ssl/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
+    networks:
+      elk:
+        ipv4_address: 192.168.0.110
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-k","--cacert", "/usr/share/elasticsearch/config/ca.crt", "-s" ,"-f", "-u", "${ELASTIC_USER}:${ELASTIC_PASSWORD}", "https://localhost:9200/_cat/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+
+  es11:
+    image: elasticsearch:7.9.2
+    restart: always
+    container_name: es11.mytest.ir
+    environment:
+      - TZ=Asia/Tehran
+      - node.name=es11.mytest.ir
+      - node.attr.box_type=cold
+      - cluster.name=${CLUSTER_NAME}
+      - discovery.seed_hosts=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir,es04.mytest.ir,es05.mytest.ir,es06.mytest.ir,es07.mytest.ir,es08.mytest.ir,es09.mytest.ir,es10.mytest.ir
+      - cluster.initial_master_nodes=es01.mytest.ir,es02.mytest.ir,es03.mytest.ir
+      - node.master=false
+      - node.data=true
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=${ES_JAVA_OPTS}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - path.repo=/usr/share/elasticsearch/backup
+      - xpack.monitoring.collection.enabled=true
+      - xpack.http.ssl.verification_mode=none
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.transport.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.keystore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.truststore.path=/usr/share/elasticsearch/config/elastic-certificates.p12
+      - xpack.security.http.ssl.client_authentication=optional
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/esdata/cold/esdata11:/usr/share/elasticsearch/data
+      - /mount/esdata:/usr/share/elasticsearch/backup
+      - ./config/ssl/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12:ro
+    networks:
+      elk:
+        ipv4_address: 192.168.0.111
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "curl", "-k","--cacert", "/usr/share/elasticsearch/config/ca.crt", "-s" ,"-f", "-u", "${ELASTIC_USER}:${ELASTIC_PASSWORD}", "https://localhost:9200/_cat/health"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+
+  logstash-dnsquerylog1:
+    container_name: logstash-dnsquerylog1
+    image: logstash:7.9.2
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/logstash/pipeline/dnsquerylog1.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./config/logstash/patterns/:/usr/share/logstash/patterns/
+      - ./config/ssl:/usr/share/instance
+    healthcheck:
+      test: bin/logstash -t
+      interval: 60s
+      timeout: 50s
+      retries: 5
+    environment:
+      TZ: Asia/Tehran
+      LS_JAVA_OPTS: ${LS_JAVA_OPTS}
+      HTTP_HOST: "0.0.0.0"
+      NODE_NAME: "logstash-dnsquerylog1"
+      PIPELINE.BATCH.SIZE: "5000"
+      XPACK_MONITORING_ELASTICSEARCH_HOSTS: '["https://es01.mytest.ir:9200","https://es02.mytest.ir:9200","https://es03.mytest.ir:9200"]'
+      XPACK_MONITORING_ELASTICSEARCH_USERNAME: ${ELASTIC_USER}
+      XPACK_MONITORING_ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+      XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY: "/usr/share/instance/es.ca.pem"
+      XPACK_MONITORING_ELASTICSEARCH_SSL_VERIFICATION_MODE: "certificate"
+      XPACK_MONITORING_ENABLED: "true"
+    extra_hosts:
+      - kAFKA:${KAFKA_IP}
+    networks:
+      elk:
+        ipv4_address: 192.168.0.201
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+
+  logstash-dnsquerylog2:
+    container_name: logstash-dnsquerylog2
+    image: logstash:7.9.2
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/logstash/pipeline/dnsquerylog2.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./config/logstash/patterns/:/usr/share/logstash/patterns/
+      - ./config/ssl:/usr/share/instance
+    healthcheck:
+      test: bin/logstash -t
+      interval: 60s
+      timeout: 50s
+      retries: 5
+    environment:
+      TZ: Asia/Tehran
+      LS_JAVA_OPTS: ${LS_JAVA_OPTS}
+      HTTP_HOST: "0.0.0.0"
+      NODE_NAME: "logstash-dnsquerylog2"
+      PIPELINE.BATCH.SIZE: "5000"
+      XPACK_MONITORING_ELASTICSEARCH_HOSTS: '["https://es01.mytest.ir:9200","https://es02.mytest.ir:9200","https://es03.mytest.ir:9200"]'
+      XPACK_MONITORING_ELASTICSEARCH_USERNAME: ${ELASTIC_USER}
+      XPACK_MONITORING_ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+      XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY: "/usr/share/instance/es.ca.pem"
+      XPACK_MONITORING_ELASTICSEARCH_SSL_VERIFICATION_MODE: "certificate"
+      XPACK_MONITORING_ENABLED: "true"
+    extra_hosts:
+      - kAFKA:${KAFKA_IP}
+    networks:
+      elk:
+        ipv4_address: 192.168.0.202
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+#  logstash-syslog:
+#    container_name: logstash-syslog
+#    image: logstash:7.9.2
+#    restart: always
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
+#      - ./config/logstash/pipeline/syslog.conf:/usr/share/logstash/pipeline/logstash.conf
+#      - ./config/logstash/patterns/:/usr/share/logstash/patterns/
+#      - ./config/ssl:/usr/share/instance
+#    healthcheck:
+#      test: bin/logstash -t
+#      interval: 60s
+#      timeout: 50s
+#      retries: 5
+#    environment:
+#      TZ: Asia/Tehran
+#      LS_JAVA_OPTS: ${LS_JAVA_OPTS}
+#      HTTP_HOST: "0.0.0.0"
+#      NODE_NAME: "logstash-syslog"
+#      #PIPELINE.BATCH.SIZE: "1000"
+#      XPACK_MONITORING_ELASTICSEARCH_HOSTS: '["https://es01.mytest.ir:9200","https://es02.mytest.ir:9200","https://es03.mytest.ir:9200"]'
+#      XPACK_MONITORING_ELASTICSEARCH_USERNAME: ${ELASTIC_USER}
+#      XPACK_MONITORING_ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+#      XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY: "/usr/share/instance/es.ca.pem"
+#      XPACK_MONITORING_ELASTICSEARCH_SSL_VERIFICATION_MODE: "certificate"
+#      XPACK_MONITORING_ENABLED: "true"
+#    extra_hosts:
+#      - kAFKA:${KAFKA_IP}
+#    networks:
+#      elk:
+#        ipv4_address: 192.168.0.202
+#    logging:
+#       driver: "json-file"
+#       options:
+#          max-size: "200k"
+#          max-file: "10"
+#
+#  logstash-iptablelog:
+#    container_name: logstash-iptablelog
+#    image: logstash:7.9.2
+#    restart: always
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
+#      - ./config/logstash/pipeline/iptablelog.conf:/usr/share/logstash/pipeline/logstash.conf
+#      - ./config/logstash/patterns/:/usr/share/logstash/patterns/
+#      - ./config/ssl:/usr/share/instance
+#    healthcheck:
+#      test: bin/logstash -t
+#      interval: 60s
+#      timeout: 50s
+#      retries: 5
+#    environment:
+#      TZ: Asia/Tehran
+#      LS_JAVA_OPTS: ${LS_JAVA_OPTS}
+#      HTTP_HOST: "0.0.0.0"
+#      NODE_NAME: "logstash-iptablelog"
+#      #PIPELINE.BATCH.SIZE: "1000"
+#      XPACK_MONITORING_ELASTICSEARCH_HOSTS: '["https://es01.mytest.ir:9200","https://es02.mytest.ir:9200","https://es03.mytest.ir:9200"]'
+#      XPACK_MONITORING_ELASTICSEARCH_USERNAME: ${ELASTIC_USER}
+#      XPACK_MONITORING_ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+#      XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY: "/usr/share/instance/es.ca.pem"
+#      XPACK_MONITORING_ELASTICSEARCH_SSL_VERIFICATION_MODE: "certificate"
+#      XPACK_MONITORING_ENABLED: "true"
+#    extra_hosts:
+#      - kAFKA:${KAFKA_IP}
+#    networks:
+#      elk:
+#        ipv4_address: 192.168.0.203
+#    logging:
+#       driver: "json-file"
+#       options:
+#          max-size: "200k"
+#          max-file: "10"
+#
+#  logstash-hardware:
+#    container_name: logstash-hardware
+#    image: logstash:7.9.2
+#    restart: always
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
+#      - ./config/logstash/pipeline/hardware.conf:/usr/share/logstash/pipeline/logstash.conf
+#      - ./config/logstash/patterns/:/usr/share/logstash/patterns/
+#      - ./config/ssl:/usr/share/instance
+#    healthcheck:
+#      test: bin/logstash -t
+#      interval: 60s
+#      timeout: 50s
+#      retries: 5
+#    environment:
+#      TZ: Asia/Tehran
+#      LS_JAVA_OPTS: ${LS_JAVA_OPTS}
+#      HTTP_HOST: "0.0.0.0"
+#      NODE_NAME: "logstash-hardware"
+#      #PIPELINE.BATCH.SIZE: "1000"
+#      XPACK_MONITORING_ELASTICSEARCH_HOSTS: '["https://es01.mytest.ir:9200","https://es02.mytest.ir:9200","https://es03.mytest.ir:9200"]'
+#      XPACK_MONITORING_ELASTICSEARCH_HOSTS: '["https://es01.mytest.ir:9200","https://es02.mytest.ir:9200","https://es03.mytest.ir:9200"]'
+#      XPACK_MONITORING_ELASTICSEARCH_USERNAME: ${ELASTIC_USER}
+#      XPACK_MONITORING_ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+#      XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY: "/usr/share/instance/es.ca.pem"
+#      XPACK_MONITORING_ELASTICSEARCH_SSL_VERIFICATION_MODE: "certificate"
+#      XPACK_MONITORING_ENABLED: "true"
+#    extra_hosts:
+#      - kAFKA:${KAFKA_IP}
+#    networks:
+#      elk:
+#        ipv4_address: 192.168.0.204
+#    ports:
+#      - "5668:5668"
+#    logging:
+#       driver: "json-file"
+#       options:
+#          max-size: "200k"
+#          max-file: "10"
+
+  kibana:
+    container_name: kibana
+    image: kibana:7.9.2   
+    restart: always 
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./config/ssl:/usr/share/instance
+    ports:
+      - "5601:5601"
+    networks:
+      elk:
+        ipv4_address: 192.168.0.200
+    environment:
+      TZ: Asia/Tehran
+      SERVER_HOST: 0.0.0.0
+      SERVER_NAME: "kibana"
+      ELASTICSEARCH_HOSTS: '["https://es01.mytest.ir:9200","https://es02.mytest.ir:9200","https://es03.mytest.ir:9200"]'
+      XPACK_SECURITY_ENABLED: "true"
+      XPACK_MONITORING_ENABLED: "true"
+      XPACK_MONITORING_COLLECTION_ENABLED: "true"
+      XPACK_MONITORING_UI_CONTAINER_ELASTICSEARCH_ENABLED: "true"
+      XPACK_SECURITY_ENCRYPTIONKEY: "KJGSJHGSSJAHG232736JYGSFvadyhgSi"
+      XPACK_REPORTING_ENCRYPTIONKEY: "asdxcaasdi7uy623kjashdKJGSJfojeH"
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: "23kjashdKJGSJHGSSJAHG23273rmtoL6"
+      ELASTICSEARCH_USERNAME: ${ELASTIC_USER}
+      ELASTICSEARCH_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: /usr/share/instance/es.ca.pem
+      ELASTICSEARCH_SSL_VERIFICATIONMODE: "certificate"
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: curl -s -f http://localhost:5601 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 3          
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/zookeeper:/opt/zookeeper-3.4.13/data/
+    network_mode: host
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: nc -z localhost 2181 || exit -1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  kafka:
+    container_name: kafka
+    image: wurstmeister/kafka
+    restart: always 
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/kafka:/kafka
+      - /etc/localtime:/etc/localtime:ro
+    network_mode: host
+    environment:
+      #KAFKA_ADVERTISED_HOST_NAME: ${KAFKA_IP}
+      KAFKA_LISTENERS: "INTERNAL://${KAFKA_IP}:9092, OUT://${KAFKA_IP}:29092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://${KAFKA_IP}:9092, OUT://${KAFKA_IP}:29092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,OUT:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "OUT"
+      KAFKA_ZOOKEEPER_CONNECT: "${KAFKA_IP}:2181"
+      KAFKA_MESSAGE_MAX_BYTES: 2000000
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "unset" , "JMX_PORT" ,";" ,"kafka-topics.sh","--zookeeper","zookeeper:2181","--list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    container_name: kafdrop
+    restart: always
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "${KAFKA_IP}:9092"
+      JVM_OPTS: "-Xms1024M -Xmx1024M"
+      SERVER_SERVLET_CONTEXTPATH: "/"
+    network_mode: host
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    logging:
+       driver: "json-file"
+       options:
+          max-size: "200k"
+          max-file: "10"
+    healthcheck:
+      test: curl localhost:9000 || exit -1
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  elk:
+    driver: overlay
+    ipam:
+     config:
+       - subnet: 192.168.0.0/24
+      #   gateway: 192.168.0.1
+    driver_opts:
+      com.docker.network.bridge.name: br_elk

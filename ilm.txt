@@ -1,0 +1,343 @@
+PUT _ilm/policy/iptableslog-ilm
+{
+  "policy": {
+    "phases": {
+      "hot": {
+        "min_age": "0ms",
+        "actions": {
+          "rollover": {
+            "max_age": "1d",
+            "max_size": "100gb"
+          },
+          "set_priority": {
+            "priority": 100
+          }
+        }
+      },
+      "warm": {
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 1,
+            "include": {},
+            "exclude": {},
+            "require": {
+              "box_type": "warm"
+            }
+          },
+          "set_priority": {
+            "priority": 50
+          },
+          "shrink": {
+            "number_of_shards": 3
+          }
+        }
+      },
+      "cold": {
+        "min_age": "7d",
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 0,
+            "include": {},
+            "exclude": {},
+            "require": {
+              "box_type": "cold"
+            }
+          },
+          "freeze": {},
+          "set_priority": {
+            "priority": null
+          }
+        }
+      },
+      "delete": {
+        "min_age": "30d",
+        "actions": {
+          "delete": {
+            "delete_searchable_snapshot": true
+          }
+        }
+      }
+    }
+  }
+}
+PUT _template/iptableslog
+{
+  "index_patterns": [
+    "iptableslog-0*"
+    ],
+  "settings": {
+    "index": {
+      "number_of_shards": 6,
+      "number_of_replicas": 1,
+      "lifecycle.name": "iptableslog-ilm",
+      "lifecycle.rollover_alias": "iptableslog-alias",
+      "routing.allocation.require.box_type": "hot"
+    }
+  }
+}
+PUT iptableslog-000001
+{
+  "aliases": {
+    "iptableslog-alias": {
+      "is_write_index": true
+    }
+  }
+}
+#####################################
+PUT _ilm/policy/dnsquerylog-ilm
+{
+  "policy": {
+    "phases": {
+      "hot": {
+        "min_age": "0ms",
+        "actions": {
+          "rollover": {
+            "max_age": "1d",
+            "max_size": "100gb"
+          },
+          "set_priority": {
+            "priority": 100
+          }
+        }
+      },
+      "warm": {
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 1,
+            "include": {},
+            "exclude": {},
+            "require": {
+              "box_type": "warm"
+            }
+          },
+          "set_priority": {
+            "priority": 50
+          },
+          "shrink": {
+            "number_of_shards": 3
+          }
+        }
+      },
+      "cold": {
+        "min_age": "7d",
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 0,
+            "include": {},
+            "exclude": {},
+            "require": {
+              "box_type": "cold"
+            }
+          },
+          "freeze": {},
+          "set_priority": {
+            "priority": null
+          }
+        }
+      },
+      "delete": {
+        "min_age": "30d",
+        "actions": {
+          "delete": {
+            "delete_searchable_snapshot": true
+          }
+        }
+      }
+    }
+  }
+}
+PUT _template/dnsquerylog
+{
+  "index_patterns": [
+    "dnsquerylog-0*"
+    ],
+  "settings": {
+    "index": {
+      "number_of_shards": 6,
+      "number_of_replicas": 1,
+      "lifecycle.name": "dnsquerylog-ilm",
+      "lifecycle.rollover_alias": "dnsquerylog-alias",
+      "routing.allocation.require.box_type": "hot"
+    }
+  }
+}
+PUT dnsquerylog-000001
+{
+  "aliases": {
+    "dnsquerylog-alias": {
+      "is_write_index": true
+    }
+  }
+}
+######################################
+PUT _ilm/policy/syslog-ilm
+{
+  "policy": {
+    "phases": {
+      "hot": {
+        "min_age": "0ms",
+        "actions": {
+          "rollover": {
+            "max_age": "1d",
+            "max_size": "100gb"
+          },
+          "set_priority": {
+            "priority": 100
+          }
+        }
+      },
+      "warm": {
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 1,
+            "include": {},
+            "exclude": {},
+            "require": {
+              "box_type": "warm"
+            }
+          },
+          "set_priority": {
+            "priority": 50
+          },
+          "shrink": {
+            "number_of_shards": 3
+          }
+        }
+      },
+      "cold": {
+        "min_age": "7d",
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 0,
+            "include": {},
+            "exclude": {},
+            "require": {
+              "box_type": "cold"
+            }
+          },
+          "freeze": {},
+          "set_priority": {
+            "priority": null
+          }
+        }
+      },
+      "delete": {
+        "min_age": "30d",
+        "actions": {
+          "delete": {
+            "delete_searchable_snapshot": true
+          }
+        }
+      }
+    }
+  }
+}
+PUT _template/syslog
+{
+  "index_patterns": [
+    "syslog-0*"
+    ],
+  "settings": {
+    "index": {
+      "number_of_shards": 6,
+      "number_of_replicas": 1,
+      "lifecycle.name": "syslog-ilm",
+      "lifecycle.rollover_alias": "syslog-alias",
+      "routing.allocation.require.box_type": "hot"
+    }
+  }
+}
+PUT syslog-000001
+{
+  "aliases": {
+    "syslog-alias": {
+      "is_write_index": true
+    }
+  }
+}
+####################################
+PUT _ilm/policy/hardware-ilm
+{
+  "policy": {
+    "phases": {
+      "hot": {
+        "min_age": "0ms",
+        "actions": {
+          "rollover": {
+            "max_age": "1d",
+            "max_size": "100gb"
+          },
+          "set_priority": {
+            "priority": 100
+          }
+        }
+      },
+      "warm": {
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 1,
+            "include": {},
+            "exclude": {},
+            "require": {
+              "box_type": "warm"
+            }
+          },
+          "set_priority": {
+            "priority": 50
+          },
+          "shrink": {
+            "number_of_shards": 3
+          }
+        }
+      },
+      "cold": {
+        "min_age": "7d",
+        "actions": {
+          "allocate": {
+            "number_of_replicas": 0,
+            "include": {},
+            "exclude": {},
+            "require": {
+              "box_type": "cold"
+            }
+          },
+          "freeze": {},
+          "set_priority": {
+            "priority": null
+          }
+        }
+      },
+      "delete": {
+        "min_age": "30d",
+        "actions": {
+          "delete": {
+            "delete_searchable_snapshot": true
+          }
+        }
+      }
+    }
+  }
+}
+PUT _template/hardware
+{
+  "index_patterns": [
+    "hardware-0*"
+    ],
+  "settings": {
+    "index": {
+      "number_of_shards": 6,
+      "number_of_replicas": 1,
+      "lifecycle.name": "hardware-ilm",
+      "lifecycle.rollover_alias": "hardware-alias",
+      "routing.allocation.require.box_type": "hot"
+    }
+  }
+}
+PUT hardware-000001
+{
+  "aliases": {
+    "hardware-alias": {
+      "is_write_index": true
+    }
+  }
+}
